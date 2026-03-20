@@ -133,16 +133,16 @@ async function fetchFromGoogleSheets() {
 
 async function postStatusToGoogleSheets(studentId, status) {
   const url = getGoogleSheetsUrl();
-  const payload = new URLSearchParams({
+  const payload = {
     action: "updateStatus",
     studentId,
     status
-  });
+  };
 
   const response = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-    body: payload.toString()
+    headers: { "Content-Type": "text/plain;charset=UTF-8" },
+    body: JSON.stringify(payload)
   });
 
   return parseJsonResponse(response, "Failed to update status in Google Sheets endpoint");

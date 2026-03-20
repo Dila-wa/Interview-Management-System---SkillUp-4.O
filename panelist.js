@@ -61,8 +61,8 @@ function renderQueue(students) {
           </div>
           ${
             student.status === "pending"
-              ? `<button class="btn" data-student-id="${student.id}">Set Completed</button>`
-              : `<span class="tag completed">completed</span>`
+              ? `<button class="btn" data-student-id="${student.id}" data-next-status="completed">Set Completed</button>`
+              : `<button class="btn secondary" data-student-id="${student.id}" data-next-status="pending">Set Pending</button>`
           }
         </div>
       `
@@ -72,8 +72,9 @@ function renderQueue(students) {
   queueList.querySelectorAll("button[data-student-id]").forEach((button) => {
     button.addEventListener("click", async (event) => {
       const studentId = event.currentTarget.getAttribute("data-student-id");
+      const nextStatus = event.currentTarget.getAttribute("data-next-status") || "completed";
       try {
-        await window.DataService.updateStudentStatus(studentId, "completed");
+        await window.DataService.updateStudentStatus(studentId, nextStatus);
         await loadPanel();
       } catch (error) {
         alert(`Update failed: ${error.message}`);
