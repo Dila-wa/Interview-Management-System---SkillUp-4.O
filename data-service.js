@@ -67,10 +67,68 @@ async function parseJsonResponse(response, fallbackErrorMessage) {
   }
 }
 
+function firstNonEmpty(...values) {
+  for (const value of values) {
+    if (value !== undefined && value !== null && String(value).trim() !== "") {
+      return value;
+    }
+  }
+  return "";
+}
+
+function normalizeStatus(value) {
+  const normalized = String(value || "").trim().toLowerCase();
+  return normalized === "completed" ? "completed" : "pending";
+}
+
+function normalizeGoogleSheetsData(payload) {
+  const panelists = (payload?.panelists || []).map((panelist, index) => {
+    const id = String(firstNonEmpty(panelist.id, panelist.ID, panelist.panelistId, panelist.PanelistId, `P${index + 1}`)).trim();
+    const rawName = firstNonEmpty(panelist.name, panelist.Name, panelist.panelName, panelist.PanelName, id);
+
+    return {
+      id,
+      name: String(rawName).trim()
+    };
+  });
+
+  const students = (payload?.students || []).map((student, index) => {
+    const id = String(
+      firstNonEmpty(
+        student.id,
+        student.ID,
+        student.studentId,
+        student.StudentId,
+        student.Email,
+        `S${String(index + 1).padStart(3, "0")}`
+      )
+    ).trim();
+
+    return {
+      id,
+      name: String(firstNonEmpty(student.name, student.Name, student.studentName, student.StudentName, id)).trim(),
+      panelistId: String(
+        firstNonEmpty(
+          student.panelistId,
+          student.PanelistId,
+          student.panelId,
+          student.PanelId,
+          student["Panelist ID"],
+          ""
+        )
+      ).trim(),
+      status: normalizeStatus(firstNonEmpty(student.status, student.Status, "pending"))
+    };
+  });
+
+  return { panelists, students };
+}
+
 async function fetchFromGoogleSheets() {
   const url = getGoogleSheetsUrl();
   const response = await fetch(`${url}?action=getData&t=${Date.now()}`);
-  return parseJsonResponse(response, "Failed to fetch data from Google Sheets endpoint");
+  const payload = await parseJsonResponse(response, "Failed to fetch data from Google Sheets endpoint");
+  return normalizeGoogleSheetsData(payload);
 }
 
 async function postStatusToGoogleSheets(studentId, status) {
