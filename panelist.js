@@ -5,6 +5,28 @@ function getPanelId() {
 
 let pollTimer = null;
 let isLoading = false;
+const PANEL_AUTH_KEY = "panelAccessGranted";
+const PANEL_LOGIN_USERNAME = "admin";
+const PANEL_LOGIN_PASSWORD = "admin123";
+
+function ensurePanelAccess() {
+  const isAlreadyAuthorized = sessionStorage.getItem(PANEL_AUTH_KEY) === "true";
+  if (isAlreadyAuthorized) {
+    return true;
+  }
+
+  const username = window.prompt("Enter username:");
+  const password = window.prompt("Enter password:");
+
+  if (username === PANEL_LOGIN_USERNAME && password === PANEL_LOGIN_PASSWORD) {
+    sessionStorage.setItem(PANEL_AUTH_KEY, "true");
+    return true;
+  }
+
+  alert("Invalid login details.");
+  window.location.href = "index.html";
+  return false;
+}
 
 function getAutoRefreshMs() {
   const value = Number(window.APP_CONFIG.autoRefreshMs);
@@ -128,11 +150,13 @@ async function loadPanel() {
   }
 }
 
-document.getElementById("backBtn").addEventListener("click", () => {
-  window.location.href = "index.html";
-});
+if (ensurePanelAccess()) {
+  document.getElementById("backBtn").addEventListener("click", () => {
+    window.location.href = "index.html";
+  });
 
-document.getElementById("refreshBtn").addEventListener("click", loadPanel);
-loadPanel();
+  document.getElementById("refreshBtn").addEventListener("click", loadPanel);
+  loadPanel();
 
-pollTimer = window.setInterval(loadPanel, getAutoRefreshMs());
+  pollTimer = window.setInterval(loadPanel, getAutoRefreshMs());
+}
