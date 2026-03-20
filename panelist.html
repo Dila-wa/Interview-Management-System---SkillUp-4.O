@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panelist Queue</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1 id="panelTitle">Panelist Queue</h1>
+    <p>Complete current interview and move to next student</p>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <div class="card-header">
+        <h2>Allocated Students</h2>
+        <div class="actions">
+          <button id="backBtn" class="btn secondary">Back to Overview</button>
+          <button id="refreshBtn" class="btn">Sync Now</button>
+        </div>
+      </div>
+
+      <p id="syncStatus" class="note">Live sync starting...</p>
+      <div id="panelInfo" class="panel-info"></div>
+      <div id="currentStudent" class="current-student"></div>
+      <div id="queueList" class="list"></div>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="data-service.js"></script>
+  <script src="panelist.js"></script>
+</body>
+</html>
