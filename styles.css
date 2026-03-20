@@ -10,6 +10,12 @@
   --success-text: #166534;
   --pending-bg: #fef3c7;
   --pending-text: #92400e;
+  --absent-bg: #fee2e2;
+  --absent-text: #991b1b;
+  --complete-btn: #16a34a;
+  --complete-btn-hover: #15803d;
+  --absent-btn: #dc2626;
+  --absent-btn-hover: #b91c1c;
 }
 
 * {
@@ -70,6 +76,15 @@ body {
   margin: 0 0 6px;
 }
 
+.side-section {
+  margin-top: 12px;
+}
+
+.side-section h4 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+}
+
 .ready-list {
   margin-top: 10px;
   display: grid;
@@ -88,8 +103,25 @@ body {
   font-size: 0.9rem;
 }
 
+.ready-item ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
 .ready-item .label {
   color: var(--muted);
+}
+
+.next-ready-highlight {
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid var(--pending-bg);
+  border-radius: 8px;
+  background: #fff9db;
+}
+
+.next-ready-highlight p {
+  margin-top: 0;
 }
 
 .card-header {
@@ -121,6 +153,26 @@ body {
 .btn.secondary {
   background: white;
   color: var(--primary);
+}
+
+.btn.btn-complete {
+  border-color: var(--complete-btn);
+  background: var(--complete-btn);
+  color: #ffffff;
+}
+
+.btn.btn-complete:hover {
+  background: var(--complete-btn-hover);
+}
+
+.btn.btn-absent {
+  border-color: var(--absent-btn);
+  background: var(--absent-btn);
+  color: #ffffff;
+}
+
+.btn.btn-absent:hover {
+  background: var(--absent-btn-hover);
 }
 
 .summary {
@@ -184,6 +236,11 @@ body {
 .tag.completed {
   background: var(--success-bg);
   color: var(--success-text);
+}
+
+.tag.absent {
+  background: var(--absent-bg);
+  color: var(--absent-text);
 }
 
 .panel-info,

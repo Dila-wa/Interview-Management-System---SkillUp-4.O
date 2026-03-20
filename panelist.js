@@ -53,12 +53,24 @@ function renderCurrentStudent(students) {
   currentContainer.innerHTML = `
     <h3>Current Student</h3>
     <p><strong>${current.name}</strong> (${current.id})</p>
-    <button id="completeBtn" class="btn">Mark Completed & Move Next</button>
+    <div class="actions">
+      <button id="completeBtn" class="btn btn-complete">Mark Completed & Move Next</button>
+      <button id="absentBtn" class="btn btn-absent">Mark Absent & Move Next</button>
+    </div>
   `;
 
   document.getElementById("completeBtn").addEventListener("click", async () => {
     try {
       await window.DataService.updateStudentStatus(current.id, "completed");
+      await loadPanel();
+    } catch (error) {
+      alert(`Update failed: ${error.message}`);
+    }
+  });
+
+  document.getElementById("absentBtn").addEventListener("click", async () => {
+    try {
+      await window.DataService.updateStudentStatus(current.id, "absent");
       await loadPanel();
     } catch (error) {
       alert(`Update failed: ${error.message}`);
@@ -83,7 +95,12 @@ function renderQueue(students) {
           </div>
           ${
             student.status === "pending"
-              ? `<button class="btn" data-student-id="${student.id}" data-next-status="completed">Set Completed</button>`
+              ? `
+                  <div class="actions">
+                    <button class="btn btn-complete" data-student-id="${student.id}" data-next-status="completed">Set Completed</button>
+                    <button class="btn btn-absent" data-student-id="${student.id}" data-next-status="absent">Set Absent</button>
+                  </div>
+                `
               : `<button class="btn secondary" data-student-id="${student.id}" data-next-status="pending">Set Pending</button>`
           }
         </div>

@@ -55,7 +55,7 @@ Create 2 tabs exactly with these names and headers in row 1:
 
 Rules:
 - `panelistId` in `Students` must match an `id` from `Panelists` (P1-P5).
-- `status` should be either `pending` or `completed`.
+- `status` should be `pending`, `completed`, or `absent`.
 - Keep header names exactly as shown.
 
 ### 2) Create Apps Script

@@ -78,7 +78,9 @@ function firstNonEmpty(...values) {
 
 function normalizeStatus(value) {
   const normalized = String(value || "").trim().toLowerCase();
-  return normalized === "completed" ? "completed" : "pending";
+  if (normalized === "completed") return "completed";
+  if (normalized === "absent") return "absent";
+  return "pending";
 }
 
 function normalizeGoogleSheetsData(payload) {
