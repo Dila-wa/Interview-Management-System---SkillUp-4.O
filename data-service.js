@@ -46,26 +46,48 @@ function saveLocalData(data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
+function getGoogleSheetsUrl() {
+  const rawUrl = window.APP_CONFIG.googleSheetsWebAppUrl;
+  if (!rawUrl) throw new Error("Google Sheets Web App URL is missing in config.js");
+  return rawUrl.replace(/\/$/, "");
+}
+
+async function parseJsonResponse(response, fallbackErrorMessage) {
+  const rawText = await response.text();
+
+  if (!response.ok) {
+    throw new Error(`${fallbackErrorMessage} (HTTP ${response.status})`);
+  }
+
+  try {
+    return JSON.parse(rawText);
+  } catch {
+    const shortText = rawText.slice(0, 140).replace(/\s+/g, " ").trim();
+    throw new Error(`Apps Script returned non-JSON response. ${shortText || "Check deployment access and endpoint URL."}`);
+  }
+}
+
 async function fetchFromGoogleSheets() {
-  const url = window.APP_CONFIG.googleSheetsWebAppUrl;
-  if (!url) throw new Error("Google Sheets Web App URL is missing in config.js");
-  const response = await fetch(`${url}?action=getData`);
-  if (!response.ok) throw new Error("Failed to fetch data from Google Sheets endpoint");
-  return response.json();
+  const url = getGoogleSheetsUrl();
+  const response = await fetch(`${url}?action=getData&t=${Date.now()}`);
+  return parseJsonResponse(response, "Failed to fetch data from Google Sheets endpoint");
 }
 
 async function postStatusToGoogleSheets(studentId, status) {
-  const url = window.APP_CONFIG.googleSheetsWebAppUrl;
-  if (!url) throw new Error("Google Sheets Web App URL is missing in config.js");
+  const url = getGoogleSheetsUrl();
+  const payload = new URLSearchParams({
+    action: "updateStatus",
+    studentId,
+    status
+  });
 
   const response = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "updateStatus", studentId, status })
+    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+    body: payload.toString()
   });
 
-  if (!response.ok) throw new Error("Failed to update status in Google Sheets endpoint");
-  return response.json();
+  return parseJsonResponse(response, "Failed to update status in Google Sheets endpoint");
 }
 
 window.DataService = {
